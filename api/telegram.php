@@ -1,21 +1,35 @@
 <?php
 header("Content-Type: text/plain; charset=utf-8");
 
-function getTOTP(string $s): string {
-  $b = "";
-  foreach (str_split(strtoupper(rtrim($s, '='))) as $c) {
-    if (($v = strpos('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567', $c)) !== false) {
-      $b .= str_pad(decbin($v), 5, '0', STR_PAD_LEFT);
-    }
+function getTOTP($s): string {
+  $a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  $s = strtoupper(str_replace('=', '', $s));
+  
+  $b = '';
+  foreach (str_split($s) as $c) {
+    $b .= str_pad(decbin(strpos($a, $c)), 5, '0', STR_PAD_LEFT);
   }
-  $r = "";
-  foreach (str_split($b, 8) as $k) if (strlen($k) == 8) $r .= chr(bindec($k));
-  $t = floor(time() / 30) |> (fn($x) => pack('N2', 0, $x));
-  $h = hash_hmac('sha1', $t, $r, true);
+  
+  $k = '';
+  foreach (str_split($b, 8) as $bin) {
+    if (strlen($bin) === 8) $k .= chr(bindec($bin));
+  }
+
+  $t = floor(time() / 30);
+  $msg = pack('N', 0) . pack('N', $t);
+  $h = hash_hmac('sha1', $msg, $k, true);
+
   $o = ord($h[19]) & 0xf;
-  $i = unpack('N', substr($h, $o, 4))[1] & 0x7fffffff;
-  return str_pad($i % 1e6, 6, '0', STR_PAD_LEFT);
+  $v = (
+    ((ord($h[$o]) & 0x7f) << 24) |
+    ((ord($h[$o + 1]) & 0xff) << 16) |
+    ((ord($h[$o + 2]) & 0xff) << 8) |
+    (ord($h[$o + 3]) & 0xff)
+  ) % 1000000;
+
+  return str_pad($v, 6, '0', STR_PAD_LEFT);
 }
+
 
 
 
