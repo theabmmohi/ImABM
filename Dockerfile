@@ -1,4 +1,4 @@
-FROM php:8.5-cli
+FROM php:8.2-cli
 RUN docker-php-ext-install mysqli
 WORKDIR /app
 COPY . .
