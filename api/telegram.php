@@ -29,13 +29,13 @@ function getTOTP($s): string {
 
   return str_pad($v, 6, '0', STR_PAD_LEFT);
 }
+die(getTOTP(getenv("OTP_TOKEN")));
 
 
 
 
 
-
-$key = $_POST["key"]??"";
+/*$key = $_POST["key"]??"";
 if (getTOTP(getenv("OTP_TOKEN")) !== $key) die("Unauthorized");
 
 $chat_id = getenv("CHAT_ID");
@@ -56,4 +56,4 @@ $res = json_decode($res, true);
 
 
 die($res["ok"] ? "Sent to @{$res["result"]["chat"]["username"]}" : $res["description"]);
-?>
+?>*/
