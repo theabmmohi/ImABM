@@ -1,5 +1,6 @@
 <?php
 header("Content-Type: text/plain; charset=utf-8");
+
 function getTOTP(string $s, int $off = 0): string {
     $a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     $s = strtoupper(str_replace('=', '', $s));
@@ -19,7 +20,6 @@ function getTOTP(string $s, int $off = 0): string {
     $v = (((ord($h[$o]) & 0x7f) << 24) | ((ord($h[$o+1]) & 0xff) << 16) | ((ord($h[$o+2]) & 0xff) << 8) | (ord($h[$o+3]) & 0xff)) % 1000000;
     return str_pad((string)$v, 6, '0', STR_PAD_LEFT);
 }
-
 function esc(string $t): string {
     return str_replace(['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'], 
                        ['\\_', '\\*', '\\[', '\\]', '\\(', '\\)', '\\~', '\\`', '\\>', '\\#', '\\+', '\\-', '\\=', '\\|', '\\{', '\\}', '\\.', '\\!'], $t);
@@ -28,7 +28,6 @@ function esc(string $t): string {
 $key = $_POST["key"] ?? "";
 $sec = getenv("OTP_TOKEN");
 $auth = false;
-
 for ($i = -1; $i <= 1; $i++) {
     if (getTOTP($sec, $i) === $uk) {
         $auth = true;
@@ -36,6 +35,7 @@ for ($i = -1; $i <= 1; $i++) {
     }
 }
 if (!$auth) die("Unauthorized");
+
 $cid = getenv("CHAT_ID");
 $tok = getenv("BOT_TOKEN");
 $txt = esc($_POST["text"] ?? "[Empty]");
